@@ -22,17 +22,20 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s)
     return -1;
 }
 
-int main()
+static long int sessionId;
+
+//static char *commandFromJSON;
+
+static int getCommandFromJSON()
 {
+    enum t_enumCommandFromJSON {COMMAND_UNKNOWN,COMMAND_SCAN};
+    int result;
     int i;
     int r;
     jsmn_parser p;
     jsmntok_t t[8]; /* We expect no more than 128 tokens */
-    long int sessionId;
 
     char * pEnd; /* using for strtol() */
-
-    printf("OptiHost version: v%lu.%lu.%lu.%lu\n",MAJOR,MINOR,BUILD,REVISION);
 
     /* Выводим принятую строку JSON */
     printf("Input JSON: %s\n", JSON_STRING);
@@ -71,15 +74,17 @@ int main()
             {
                 printf("- Command: %.*s\n", t[i + 1].end - t[i + 1].start,
                        JSON_STRING + t[i + 1].start);
-                printf("Received command: SCAN");
+                printf("Received command: SCAN\n");
                 /*TODO: Вставить обработчик команды SCAN*/
+                result = COMMAND_SCAN;
             }
             else
             {
                 printf("- Command: %.*s\n", t[i + 1].end - t[i + 1].start,
                        JSON_STRING + t[i + 1].start);
-                printf("Received unknown command");
+                printf("Received unknown command\n");
                 /*TODO: Вставить генерацию ошибки: Неизвестная команда*/
+                result = COMMAND_UNKNOWN;
             }
             i++;
         }
@@ -89,5 +94,33 @@ int main()
                    JSON_STRING + t[i].start);
         }
     }
+    return result;
+}
+
+static enum t_enumCommandFromJSON {COMMAND_UNKNOWN,COMMAND_SCAN} enumCommandFromJSON;
+
+int main()
+{
+    /* Print version OptiHost*/
+    printf("OptiHost version: v%lu.%lu.%lu.%lu\n",MAJOR,MINOR,BUILD,REVISION);
+
+    enumCommandFromJSON = getCommandFromJSON();
+
+
+    /* Switch command*/
+    switch (enumCommandFromJSON)
+    {
+    case COMMAND_UNKNOWN:
+        printf("Unknown command\n");
+        break;
+    case COMMAND_SCAN:
+        printf("Command SCAN\n");
+        break;
+    default:
+        printf("Unknown command\n");
+        break;
+    }
+
+
     return EXIT_SUCCESS;
 }

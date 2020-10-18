@@ -18,7 +18,7 @@
 	static const long REVISION  = 10;
 	
 	//Miscellaneous Version Types
-	static const long BUILDS_COUNT  = 21;
+	static const long BUILDS_COUNT  = 99;
 	#define RC_FILEVERSION 0,0,1,10
 	#define RC_FILEVERSION_STRING "0, 0, 1, 10\0"
 	static const char FULLVERSION_STRING [] = "0.0.1.10";
