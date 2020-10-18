@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1603018062 source:c:\it\src\optihost\src\main.c
+	<stdio.h>
+	<stdlib.h>
+
