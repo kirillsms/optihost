@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "version.h"
 
 /*
  * A small example of jsmn parsing when JSON structure is known and number of
@@ -30,6 +31,11 @@ int main()
     long int sessionId;
 
     char * pEnd; /* using for strtol() */
+
+    printf("OptiHost version: v%lu.%lu.%lu.%lu\n",MAJOR,MINOR,BUILD,REVISION);
+
+    /* Выводим принятую строку JSON */
+    printf("Input JSON: %s\n", JSON_STRING);
 
     jsmn_init(&p);
     r = jsmn_parse(&p, JSON_STRING, strlen(JSON_STRING), t,
@@ -61,7 +67,6 @@ int main()
         else if (jsoneq(JSON_STRING, &t[i], "command") == 0)
         {
             /* We may use strndup() to fetch string value */
-
             if (strncmp(JSON_STRING + t[i + 1].start,"scan",4) == 0)
             {
                 printf("- Command: %.*s\n", t[i + 1].end - t[i + 1].start,
@@ -74,8 +79,8 @@ int main()
                 printf("- Command: %.*s\n", t[i + 1].end - t[i + 1].start,
                        JSON_STRING + t[i + 1].start);
                 printf("Received unknown command");
+                /*TODO: Вставить генерацию ошибки: Неизвестная команда*/
             }
-
             i++;
         }
         else
