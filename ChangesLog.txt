@@ -1,0 +1,6 @@
+18 October 2020
+   released version 0.0.1 of optihost
+
+     Change log:
+        -Added: JSON parse for {command: scan}
+
