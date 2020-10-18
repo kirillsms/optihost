@@ -9,8 +9,7 @@
  */
 
 static const char *JSON_STRING =
-    "{\"user\": \"johndoe\", \"admin\": false, \"uid\": 1000,\n  "
-    "\"groups\": [\"users\", \"wheel\", \"audio\", \"video\"]}";
+    "{\"id\": 1000, \"command\": \"qwescan\"}";
 
 static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
   if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
@@ -25,6 +24,8 @@ int main() {
   int r;
   jsmn_parser p;
   jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+  char * pEnd; /* using for strtol() */
 
   jsmn_init(&p);
   r = jsmn_parse(&p, JSON_STRING, strlen(JSON_STRING), t,
@@ -42,32 +43,23 @@ int main() {
 
   /* Loop over all keys of the root object */
   for (i = 1; i < r; i++) {
-    if (jsoneq(JSON_STRING, &t[i], "user") == 0) {
-      /* We may use strndup() to fetch string value */
-      printf("- User: %.*s\n", t[i + 1].end - t[i + 1].start,
-             JSON_STRING + t[i + 1].start);
-      i++;
-    } else if (jsoneq(JSON_STRING, &t[i], "admin") == 0) {
-      /* We may additionally check if the value is either "true" or "false" */
-      printf("- Admin: %.*s\n", t[i + 1].end - t[i + 1].start,
-             JSON_STRING + t[i + 1].start);
-      i++;
-    } else if (jsoneq(JSON_STRING, &t[i], "uid") == 0) {
+    if (jsoneq(JSON_STRING, &t[i], "id") == 0) {
       /* We may want to do strtol() here to get numeric value */
-      printf("- UID: %.*s\n", t[i + 1].end - t[i + 1].start,
-             JSON_STRING + t[i + 1].start);
+      printf("- ID: %.*lu\n", t[i + 1].end - t[i + 1].start,
+             strtol((JSON_STRING + t[i + 1].start), &pEnd, 10));
       i++;
-    } else if (jsoneq(JSON_STRING, &t[i], "groups") == 0) {
-      int j;
-      printf("- Groups:\n");
-      if (t[i + 1].type != JSMN_ARRAY) {
-        continue; /* We expect groups to be an array of strings */
+    } else if (jsoneq(JSON_STRING, &t[i], "command") == 0) {
+      /* We may use strndup() to fetch string value */
+
+      if (strncmp(JSON_STRING + t[i + 1].start,"scan",4) == 0) {
+        printf("- Command (scan): %.*s\n", t[i + 1].end - t[i + 1].start,
+             JSON_STRING + t[i + 1].start);
+      } else {
+        printf("- Command (not scan): %.*s\n", t[i + 1].end - t[i + 1].start,
+             JSON_STRING + t[i + 1].start);
       }
-      for (j = 0; j < t[i + 1].size; j++) {
-        jsmntok_t *g = &t[i + j + 2];
-        printf("  * %.*s\n", g->end - g->start, JSON_STRING + g->start);
-      }
-      i += t[i + 1].size + 1;
+
+      i++;
     } else {
       printf("Unexpected key: %.*s\n", t[i].end - t[i].start,
              JSON_STRING + t[i].start);

@@ -1,5 +1,10 @@
 # depslib dependency file v1.0
-1603018062 source:c:\it\src\optihost\src\main.c
+1603023246 source:c:\it\src\optihost\src\main.c
+	"jsmn.h"
 	<stdio.h>
 	<stdlib.h>
+	<string.h>
+
+1602708212 c:\it\src\optihost\src\jsmn.h
+	<stddef.h>
 
